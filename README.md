@@ -2,7 +2,7 @@
 Homebridge plugin for configuring the meo box
 
 ## Summary
-This plugin is based on [shauncampbell's homebridge-sky-plus-hd Node.js library](https://github.com/shauncampbell/homebridge-sky-plus-hd/tree/v1-dev). Of course the meo box has less functionality than the sky plus box....
+This plugin is based on [shauncampbell's homebridge-sky-plus-hd Node.js library](https://github.com/shauncampbell/homebridge-sky-plus-hd) and [JosePedroDias's meo-controller Node.js library](https://github.com/JosePedroDias/meo-controller). Of course the meo box has less functionality than the sky plus box....
 
 
 ## Features
@@ -25,7 +25,7 @@ npm install -g homebridge-meobox
   {
     "accessory": "MeoBox",
     "name": "Meo Box",
-    "ipAddress": "192.168.1.64"
+    "ipAddress": "192.168.1.64",
   }
 ]
 ~~~
