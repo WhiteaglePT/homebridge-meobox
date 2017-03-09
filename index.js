@@ -11,19 +11,19 @@ module.exports = function(homebridge) {
 	var inherits = require('util').inherits;
 
 	//	Create the characteristic for the channel number.
-	Characteristic.ChannelNumber = function() {
-		Characteristic.call(this, 'Channel Number','1');
-		this.setProps({
-			format: Characteristic.Formats.INT,
-			unit: Characteristic.Units.NONE,
-			maxValue: 999,
-			minValue: 0,
-			minStep: 1,
-			perms: [Characteristic.Perms.WRITE]
-		});
-		this.value = this.getDefaultValue();
-	};
-	inherits(Characteristic.ChannelNumber, Characteristic);
+	// Characteristic.ChannelNumber = function() {
+	// 	Characteristic.call(this, 'Channel Number','1');
+	// 	this.setProps({
+	// 		format: Characteristic.Formats.INT,
+	// 		unit: Characteristic.Units.NONE,
+	// 		maxValue: 999,
+	// 		minValue: 0,
+	// 		minStep: 1,
+	// 		perms: [Characteristic.Perms.WRITE]
+	// 	});
+	// 	this.value = this.getDefaultValue();
+	// };
+	// inherits(Characteristic.ChannelNumber, Characteristic);
 		
 	homebridge.registerAccessory("homebridge-meobox", "MeoBox", MeoBoxAccessory);
 }
@@ -97,9 +97,9 @@ MeoBoxAccessory.prototype = {
 		switchService.getCharacteristic(Characteristic.On).on('get', this.getPowerState.bind(this));
 		
 		//	Control the box channel.
-		switchService.addCharacteristic(Characteristic.ChannelNumber);
-		switchService.getCharacteristic(Characteristic.ChannelNumber)
-					 .on('set', this.setChannelNumber.bind(this));
+		// switchService.addCharacteristic(Characteristic.ChannelNumber);
+		// switchService.getCharacteristic(Characteristic.ChannelNumber)
+		// 			 .on('set', this.setChannelNumber.bind(this));
 
 		return [switchService, informationService];
 	}
