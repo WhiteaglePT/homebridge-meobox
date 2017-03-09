@@ -45,19 +45,11 @@ MeoBoxAccessory.prototype = {
 			if (err) {
 				console.log(err);
 			} else {
-				api.sendKey('power');
+				if(!powerOn)
+					api.sendKey('power');
 			}
 			callback();
 		});
-		// if (powerOn && !meoBox.checkPowerState())
-		// {
-		// 	meoRemote.press('power');
-		// }
-		// else if (!powerOn && meoBox.checkPowerState())
-		// {
-		// 	meoRemote.press('power');
-		// }
-		callback();
 	},
 	
 	getPowerState: function(callback) {
@@ -89,7 +81,7 @@ MeoBoxAccessory.prototype = {
         			.setCharacteristic(Characteristic.Manufacturer, 'Meo')
         			.setCharacteristic(Characteristic.Model, 'Meo Box HD')
         			.setCharacteristic(Characteristic.SerialNumber, '');	
-		
+
 		var switchService = new Service.Switch(this.name);
 
 		//	Control the box power status.
