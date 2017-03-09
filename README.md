@@ -25,8 +25,7 @@ npm install -g homebridge-meobox
   {
     "accessory": "MeoBox",
     "name": "Meo Box",
-    "ipAddress": "192.168.1.64",
-    "region": "scottish-west"
+    "ipAddress": "192.168.1.64"
   }
 ]
 ~~~
