@@ -45,8 +45,7 @@ MeoBoxAccessory.prototype = {
 			if (err) {
 				console.log(err);
 			} else {
-				if(!powerOn)
-					api.sendKey('power');
+				api.sendKey('power');
 			}
 			callback();
 			api.close();
@@ -55,13 +54,10 @@ MeoBoxAccessory.prototype = {
 	
 	getPowerState: function(callback) {
 		// I'm not sure if this works.
-		meo(meoConfig.ipAddress, function(err, api) {
-			if(err)
-				callback(null, false);
-			else
-				callback(null, true);
-			api.close();
-		});
+
+		// TODO: Implement check box connected
+		// Assume it's always on...
+		callback(null, true);
 	},
 	
 	setChannelNumber: function(channel, callback) {
