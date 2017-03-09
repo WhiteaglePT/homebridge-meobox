@@ -6,7 +6,7 @@
 	"author": "Diogo Raminhos <contacto@diogoraminhos.com>",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/whiteagle/homebridge-meobox.git"
+		"url": "git://github.com/whiteaglept/homebridge-meobox.git"
 	},
     "keywords" : [
         "homebridge-plugin"
