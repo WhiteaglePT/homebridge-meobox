@@ -28,7 +28,6 @@ module.exports = function(homebridge) {
 }
 
 function MeoBoxAccessory(log, config, api) {
-	this.log = log;
 	this.config = config;
 	this.name = config.name || 'Meo Box';
 	
@@ -44,7 +43,6 @@ MeoBoxAccessory.prototype = {
 		meo(this.config.ipAddress, function(err, api) {
 			if (err) {
 				console.log(err);
-				this.log(err);
 			} else {
 				api.sendKey('power');
 			}
@@ -72,11 +70,9 @@ MeoBoxAccessory.prototype = {
 	},
 	
 	setChannelNumber: function(channel, callback) {
-		this.log('Turning channel to ' + channel);
 		console.log('Turning channel to ' + channel);
 		meo(this.config.ipAddress, function(err, api) {
 			if (err) {
-				this.log(err);
 				console.log(err);
 			} else {
 				api.sendNum(channel);
@@ -97,9 +93,7 @@ MeoBoxAccessory.prototype = {
 		meo(this.config.ipAddress, function(err, api) {
 			if (err) {
 				console.log(err);
-				this.log(err);
 			} else {
-				this.log('Connected to Meo box ' + this.config.ipAddress);
 				console.log('Connected to Meo box ' + this.config.ipAddress);
 			}
 			callback();
