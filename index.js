@@ -90,15 +90,6 @@ MeoBoxAccessory.prototype = {
         			.setCharacteristic(Characteristic.Model, 'Meo Box HD')
         			.setCharacteristic(Characteristic.SerialNumber, '');	
 		
-
-		meo(meoConfig.ipAddress, function(err, api) {
-			if (err) {
-				console.log(err);
-			} else {
-				console.log('Connected to Meo box ' + meoConfig.ipAddress);
-			}
-		});
-
 		var switchService = new Service.Switch(this.name);
 
 		//	Control the box power status.
