@@ -49,6 +49,7 @@ MeoBoxAccessory.prototype = {
 					api.sendKey('power');
 			}
 			callback();
+			api.close();
 		});
 	},
 	
@@ -59,6 +60,7 @@ MeoBoxAccessory.prototype = {
 				callback(null, false);
 			else
 				callback(null, true);
+			api.close();
 		});
 	},
 	
@@ -71,6 +73,7 @@ MeoBoxAccessory.prototype = {
 				api.sendNum(channel);
 			}
 			callback();
+			api.close();
 		});
 	},
 	
