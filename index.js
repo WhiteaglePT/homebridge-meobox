@@ -97,7 +97,6 @@ MeoBoxAccessory.prototype = {
 			} else {
 				console.log('Connected to Meo box ' + meoConfig.ipAddress);
 			}
-			callback();
 		});
 
 		var switchService = new Service.Switch(this.name);
