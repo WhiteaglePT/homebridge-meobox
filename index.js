@@ -1,6 +1,7 @@
 'use strict';
 
 var Accessory, Service, Characteristic;
+var meoConfig;
 var meo = require('meo-controller');
 
 module.exports = function(homebridge) {
@@ -28,7 +29,7 @@ module.exports = function(homebridge) {
 }
 
 function MeoBoxAccessory(log, config, api) {
-	this.config = config;
+	meoConfig = this.config = config;
 	this.name = config.name || 'Meo Box';
 	
 }
@@ -40,7 +41,7 @@ function MeoBoxAccessory(log, config, api) {
 
 MeoBoxAccessory.prototype = {
 	setPowerState: function(powerOn, callback) {
-		meo(this.config.ipAddress, function(err, api) {
+		meo(meoConfig.ipAddress, function(err, api) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -61,7 +62,7 @@ MeoBoxAccessory.prototype = {
 	
 	getPowerState: function(callback) {
 		// I'm not sure if this works.
-		meo(this.config.ipAddress, function(err, api) {
+		meo(meoConfig.ipAddress, function(err, api) {
 			if(err)
 				callback(null, false);
 			else
@@ -71,7 +72,7 @@ MeoBoxAccessory.prototype = {
 	
 	setChannelNumber: function(channel, callback) {
 		console.log('Turning channel to ' + channel);
-		meo(this.config.ipAddress, function(err, api) {
+		meo(meoConfig.ipAddress, function(err, api) {
 			if (err) {
 				console.log(err);
 			} else {
@@ -90,11 +91,11 @@ MeoBoxAccessory.prototype = {
         			.setCharacteristic(Characteristic.SerialNumber, '');	
 		
 
-		meo(this.config.ipAddress, function(err, api) {
+		meo(meoConfig.ipAddress, function(err, api) {
 			if (err) {
 				console.log(err);
 			} else {
-				console.log('Connected to Meo box ' + this.config.ipAddress);
+				console.log('Connected to Meo box ' + meoConfig.ipAddress);
 			}
 			callback();
 		});
