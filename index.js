@@ -1,6 +1,6 @@
 'use strict';
 
-var Accessory, Service, Characteristic, meoConfig, 
+var Accessory, Service, Characteristic, 
 	meo = require('meo-controller'),
 	request = require('request'),
 	crypto = require('crypto'),
@@ -16,13 +16,14 @@ module.exports = function(homebridge) {
 }
 
 function MeoBoxAccessory(log, config, api) {
-	meoConfig = this.config = config;
+	this.config = config;
 	this.name = config.name || 'Meo Box';
 	
 }
 
 MeoBoxAccessory.prototype = {
 	setPowerState: function(powerOn, callback) {
+		var meoConfig = this.config;
 		meo(meoConfig.ip, function(err, api) {
 			if (err) {
 				console.log(err);
@@ -36,6 +37,7 @@ MeoBoxAccessory.prototype = {
 	},
 	
 	getPowerState: function(callback) {
+		var meoConfig = this.config;
 		// Hardcore stuff happening here - it was quite tricky, took about an hour to find a way to get the true box power state cause it's always on.
 		meo(meoConfig.ip, function(err, api) {
 			console.info("[Meo Box] Checking if box "+meoConfig.ip+" is online.");
