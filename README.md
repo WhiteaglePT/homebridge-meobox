@@ -34,4 +34,4 @@ npm install -g homebridge-meobox
 ~~~
 
 The `accessory` must be `MeoBox` for the plugin to work.
-You can set the `name` parameter to anything you like. The `ip` parameter should point to your Meo Box, the "deviceId" (and IP) can be found on the box menu's by going to the last menu, last option - the deviceId is on the field "ID MEOBox".
+You can set the `name` parameter to anything you like. The `ip` parameter should point to your Meo Box, the `deviceId` (and IP) can be found on the box menu's by going to the last menu, last option - the `deviceId` is on the field "ID MEOBox".
