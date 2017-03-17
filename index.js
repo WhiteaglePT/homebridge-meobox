@@ -1,27 +1,35 @@
-'use strict';
-
-var Accessory, Service, Characteristic, 
+var Service, Characteristic, 
 	meo = require('meo-controller'),
 	request = require('request'),
 	crypto = require('crypto'),
 	parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
-	Accessory = homebridge.platformAccessory;
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
-	var inherits = require('util').inherits;
 	
-	homebridge.registerAccessory("homebridge-meobox", "MeoBox", MeoBoxAccessory);
+	homebridge.registerAccessory("homebridge-meobox", "MeoBox", MeoBox);
 }
 
-function MeoBoxAccessory(log, config, api) {
+function MeoBox(log, config, api) {
 	this.config = config;
 	this.name = config.name || 'Meo Box';
 	
+	this.powerService = new Service.Switch(this.name);
+
+	//	Control the box power status.
+	this.powerService.getCharacteristic(Characteristic.On).on('set', this.setPowerState.bind(this));
+	this.powerService.getCharacteristic(Characteristic.On).on('get', this.getPowerState.bind(this));
+
+	this.informationService = new Service.AccessoryInformation()
+    			.setCharacteristic(Characteristic.Manufacturer, 'Meo')
+    			.setCharacteristic(Characteristic.Model, 'Meo Box HD')
+    			.setCharacteristic(Characteristic.SerialNumber, config.deviceId);
+
+    console.info("[Meo Box] Initialized box with IP "+config.ip+".");
 }
 
-MeoBoxAccessory.prototype.setPowerState = function(powerOn, callback) {
+MeoBox.prototype.setPowerState = function(powerOn, callback) {
 	var meoConfig = this.config;
 	meo(meoConfig.ip, function(err, api) {
 		if (err) {
@@ -35,11 +43,11 @@ MeoBoxAccessory.prototype.setPowerState = function(powerOn, callback) {
 	});
 };
 	
-MeoBoxAccessory.prototype.getPowerState = function(callback) {
+MeoBox.prototype.getPowerState = function(callback) {
 	var meoConfig = this.config;
+	console.info("[Meo Box] Checking if box with IP "+meoConfig.ip+" is online.");
 	// Hardcore stuff happening here - it was quite tricky, took about an hour to find a way to get the true box power state cause it's always on.
 	meo(meoConfig.ip, function(err, api) {
-		console.info("[Meo Box] Checking if box "+meoConfig.ip+" is online.");
 		if (err) {
 			callback(null, false);
 		} else {
@@ -115,21 +123,8 @@ MeoBoxAccessory.prototype.getPowerState = function(callback) {
 		}
 	});
 
-},
+};
 
-MeoBoxAccessory.prototype.getServices = function() {
-	var informationService;
-	
-	informationService = new Service.AccessoryInformation()
-    			.setCharacteristic(Characteristic.Manufacturer, 'Meo')
-    			.setCharacteristic(Characteristic.Model, 'Meo Box HD')
-    			.setCharacteristic(Characteristic.SerialNumber, '');	
-
-	var switchService = new Service.Switch(this.name);
-
-	//	Control the box power status.
-	switchService.getCharacteristic(Characteristic.On).on('set', this.setPowerState.bind(this));
-	switchService.getCharacteristic(Characteristic.On).on('get', this.getPowerState.bind(this));
-	
-	return [switchService, informationService];
+MeoBox.prototype.getServices = function() {
+	return [this.powerService, this.informationService];
 };
