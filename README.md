@@ -2,8 +2,11 @@
 Homebridge plugin for configuring the meo box
 
 ## Summary
-This plugin is based on [shauncampbell's homebridge-sky-plus-hd Node.js library](https://github.com/shauncampbell/homebridge-sky-plus-hd) and [JosePedroDias's meo-controller Node.js library](https://github.com/JosePedroDias/meo-controller). Of course the meo box has less functionality than the sky plus box....
+This plugin is based on [shauncampbell's homebridge-sky-plus-hd Node.js library](https://github.com/shauncampbell/homebridge-sky-plus-hd) and [JosePedroDias's meo-controller Node.js library](https://github.com/JosePedroDias/meo-controller) for easily sending commands to the MEO Box. 
 
+Of course the meo box has less functionality than the sky plus box....
+
+Be aware that this plugins uses a very special method to check on the power status of the box that also returns details about the current channel & show being watched (if you want to know how to do it checkout the code, it's a bit tricky but should be easy to read) so there's a lot to implement - a way to change channels, report the current channel being watched, etc - anyone is welcome to join in, just fork it and pull it.
 
 ## Features
 
