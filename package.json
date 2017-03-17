@@ -1,6 +1,6 @@
 {
   "name": "homebridge-meobox",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Meo Box plugin for homebridge",
   "license": "Apache 2",
   "author": "Diogo Raminhos <contacto@diogoraminhos.com>",
