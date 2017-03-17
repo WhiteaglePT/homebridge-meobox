@@ -11,7 +11,6 @@ Be aware that this plugins uses a very special method to check on the power stat
 ## Features
 
 * Switch on and off the Meo Box
-* Change Channels
 
 It would be nice to have more features - help is welcome.
 
