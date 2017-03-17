@@ -1,30 +1,17 @@
 'use strict';
 
-var Accessory, Service, Characteristic;
-var meoConfig;
-var meo = require('meo-controller');
+var Accessory, Service, Characteristic, meoConfig, 
+	meo = require('meo-controller'),
+	request = require('request'),
+	crypto = require('crypto'),
+	parseString = require('xml2js').parseString;
 
 module.exports = function(homebridge) {
 	Accessory = homebridge.platformAccessory;
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	var inherits = require('util').inherits;
-
-	//	Create the characteristic for the channel number.
-	// Characteristic.ChannelNumber = function() {
-	// 	Characteristic.call(this, 'Channel Number','1');
-	// 	this.setProps({
-	// 		format: Characteristic.Formats.INT,
-	// 		unit: Characteristic.Units.NONE,
-	// 		maxValue: 999,
-	// 		minValue: 0,
-	// 		minStep: 1,
-	// 		perms: [Characteristic.Perms.WRITE]
-	// 	});
-	// 	this.value = this.getDefaultValue();
-	// };
-	// inherits(Characteristic.ChannelNumber, Characteristic);
-		
+	
 	homebridge.registerAccessory("homebridge-meobox", "MeoBox", MeoBoxAccessory);
 }
 
@@ -34,43 +21,99 @@ function MeoBoxAccessory(log, config, api) {
 	
 }
 
-//	Create custom characteristic.
-
-
-
-
 MeoBoxAccessory.prototype = {
 	setPowerState: function(powerOn, callback) {
-		meo(meoConfig.ipAddress, function(err, api) {
+		meo(meoConfig.ip, function(err, api) {
 			if (err) {
 				console.log(err);
 			} else {
 				api.sendKey('power');
 			}
+			if(api.close)
+				api.close();
 			callback();
-			api.close();
 		});
 	},
 	
 	getPowerState: function(callback) {
-		// I'm not sure if this works.
-
-		// TODO: Implement check box connected
-		// Assume it's always on...
-		callback(null, true);
-	},
-	
-	setChannelNumber: function(channel, callback) {
-		console.log('Turning channel to ' + channel);
-		meo(meoConfig.ipAddress, function(err, api) {
+		// Hardcore stuff happening here - it was quite tricky, took about an hour to find a way to get the true box power state cause it's always on.
+		meo(meoConfig.ip, function(err, api) {
+			console.info("[Meo Box] Checking if box "+meoConfig.ip+" is online.");
 			if (err) {
-				console.log(err);
+				callback(null, false);
 			} else {
-				api.sendNum(channel);
+				var onFinished = function(status) {
+					if(api.close)
+						api.close();
+					callback(null, status);
+				}
+
+				var timestamp = (+new Date());
+				var sURL = 'page:http://nowonmytv.app.iptv.telecom.pt/NowOnMyTV.aspx?accountId=$(acct)&deviceId=$(dev)&launchorig=MeoRemote.Android&requestId='+timestamp;
+				var token = crypto.createHash('md5').update(timestamp + meoConfig.deviceId + sURL + "8767sfhdu3#189v").digest("hex"); // No comments.
+
+				request({
+				  url: 'http://remote-rose.app.iptv.telecom.pt/set.ashx?action='+encodeURIComponent(sURL).replace(/\(/g,"%28").replace(/\)/g,"%29")+'&type=MESSAGE-WRITE&application=remote-android&version=3&guid='+meoConfig.deviceId+'&n='+timestamp+'&tok='+token,
+				  headers: {
+				  	'Accept': '*/*',
+				    'User-Agent': 'MEO Go/201607131100 CFNetwork/808.1.4 Darwin/16.1.0',
+				    'Accept-Language': 'pt-pt',
+				    'Accept-Encoding': 'gzip, deflate',
+				    'Connection': 'keep-alive'
+				  }
+				}, function(error, response, body) {
+					if(!error) {
+						parseString(body, function (err, result) {
+						    if(!err && result.result && result.result.code && result.result.code.length == 1 && result.result.code[0] == '200') {
+						    	function updateChannel(i){
+						    		if(i >= 2) {
+						    			console.info("Offline");
+										return onFinished(false); // Max reached - offline.
+						    		} else {
+										api.sendNum(237);
+										request({
+											  url: 'http://nowonmytv.app.iptv.telecom.pt/NowOnMyTVUpdater.ashx?mode=get&accountId=$(acct)&deviceId='+meoConfig.deviceId+'&launchorig=MeoRemote.Android&requestId='+timestamp,
+											  headers: {
+											  	'Accept': '*/*',
+											    'User-Agent': 'MEO Go/201607131100 CFNetwork/808.1.4 Darwin/16.1.0',
+											    'Accept-Language': 'pt-pt',
+											    'Accept-Encoding': 'gzip, deflate',
+											    'Connection': 'keep-alive'
+											  }
+										}, function(error, response, body) {
+											if(!error) {
+												parseString(body, function (err, result) {
+												    if(!err && result.NowOnTV && result.NowOnTV.RequestId && result.NowOnTV.StationShortName) {
+												    	// Connected
+														onFinished(true);
+													} else {
+														setTimeout(function(){
+															updateChannel(i+1);
+														}, 2000);
+													}
+												});
+											} else {
+												setTimeout(function(){
+													updateChannel(i+1);
+												}, 2000);
+											}
+										});
+									}
+								}
+								setTimeout(function(){
+									updateChannel(0);
+								}, 500);
+							} else {
+								onFinished(false);
+							}
+						});
+					} else {
+						onFinished(false);
+					}
+				});
 			}
-			callback();
-			api.close();
 		});
+
 	},
 	
 	getServices: function() {
@@ -87,11 +130,6 @@ MeoBoxAccessory.prototype = {
 		switchService.getCharacteristic(Characteristic.On).on('set', this.setPowerState.bind(this));
 		switchService.getCharacteristic(Characteristic.On).on('get', this.getPowerState.bind(this));
 		
-		//	Control the box channel.
-		// switchService.addCharacteristic(Characteristic.ChannelNumber);
-		// switchService.getCharacteristic(Characteristic.ChannelNumber)
-		// 			 .on('set', this.setChannelNumber.bind(this));
-
 		return [switchService, informationService];
 	}
 }
